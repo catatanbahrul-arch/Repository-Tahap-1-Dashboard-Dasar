@@ -1,0 +1,323 @@
+package com.robotmessenger.facebook;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Space;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private LinearLayout root;
+    private TextView statusText;
+    private TextView statusDot;
+
+    private int dp(float value) {
+        return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    private TextView text(String value, float size, int color, boolean bold) {
+        TextView v = new TextView(this);
+        v.setText(value);
+        v.setTextSize(size);
+        v.setTextColor(color);
+        v.setGravity(Gravity.CENTER_VERTICAL);
+        if (bold) {
+            v.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }
+        return v;
+    }
+
+    private GradientDrawable bg(int color, float radius) {
+        GradientDrawable d = new GradientDrawable();
+        d.setColor(color);
+        d.setCornerRadius(dp(radius));
+        return d;
+    }
+
+    private GradientDrawable border(int fill, int stroke, float radius) {
+        GradientDrawable d = bg(fill, radius);
+        d.setStroke(dp(1), stroke);
+        return d;
+    }
+
+    private void margin(View v, int l, int t, int r, int b) {
+        v.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) v.getLayoutParams();
+        p.setMargins(dp(l), dp(t), dp(r), dp(b));
+        v.setLayoutParams(p);
+    }
+
+    private TextView button(String label) {
+        TextView b = text(label, 13, Color.WHITE, true);
+        b.setGravity(Gravity.CENTER);
+        b.setBackground(bg(Color.rgb(35, 40, 48), 12));
+        b.setPadding(dp(18), dp(12), dp(18), dp(12));
+        return b;
+    }
+
+    private TextView sectionTitle(String value) {
+        TextView v = text(value, 18, Color.rgb(25, 29, 34), true);
+        margin(v, 0, 22, 0, 10);
+        return v;
+    }
+
+    private LinearLayout card() {
+        LinearLayout c = new LinearLayout(this);
+        c.setOrientation(LinearLayout.VERTICAL);
+        c.setPadding(dp(16), dp(16), dp(16), dp(16));
+        c.setBackground(border(Color.WHITE, Color.rgb(229, 232, 236), 16));
+        return c;
+    }
+
+    private TextView emptyText(String value) {
+        TextView v = text(value, 13, Color.rgb(110, 116, 124), false);
+        v.setGravity(Gravity.CENTER);
+        v.setPadding(dp(12), dp(22), dp(12), dp(22));
+        return v;
+    }
+
+    private LinearLayout statCard(String number, String title) {
+        LinearLayout c = card();
+        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        cp.setMargins(dp(4), 0, dp(4), 0);
+        c.setLayoutParams(cp);
+
+        TextView n = text(number, 25, Color.rgb(25, 29, 34), true);
+        n.setGravity(Gravity.CENTER);
+        TextView t = text(title, 11, Color.rgb(105, 111, 119), false);
+        t.setGravity(Gravity.CENTER);
+        c.addView(n, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        c.addView(t, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        return c;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getWindow().setStatusBarColor(Color.WHITE);
+        getWindow().setNavigationBarColor(Color.WHITE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+        buildDashboard();
+    }
+
+    private void buildDashboard() {
+        root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(Color.rgb(247, 248, 250));
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(dp(18), dp(16), dp(18), dp(18));
+
+        // HEADER
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.VERTICAL);
+        header.setPadding(dp(18), dp(18), dp(18), dp(18));
+        header.setBackground(bg(Color.WHITE, 18));
+
+        TextView title = text("ROBOT MESSENGER FACEBOOK", 20,
+                Color.rgb(20, 24, 29), true);
+        title.setGravity(Gravity.CENTER);
+
+        TextView subtitle = text("DASHBOARD", 11,
+                Color.rgb(105, 111, 119), true);
+        subtitle.setGravity(Gravity.CENTER);
+
+        header.addView(title);
+        header.addView(subtitle);
+
+        LinearLayout statusRow = new LinearLayout(this);
+        statusRow.setGravity(Gravity.CENTER);
+        statusRow.setPadding(0, dp(10), 0, 0);
+
+        statusDot = text("●", 13, Color.rgb(95, 100, 108), false);
+        statusText = text("Robot berhenti", 12,
+                Color.rgb(85, 91, 99), true);
+
+        statusRow.addView(statusDot);
+        statusRow.addView(statusText);
+
+        header.addView(statusRow);
+
+        content.addView(header);
+
+        // CONTROL
+        content.addView(sectionTitle("Kontrol Robot"));
+
+        LinearLayout controls = new LinearLayout(this);
+        controls.setOrientation(LinearLayout.HORIZONTAL);
+        controls.setGravity(Gravity.CENTER);
+
+        TextView play = button("PLAY");
+        TextView pause = button("PAUSE");
+        TextView stop = button("STOP");
+
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        bp.setMargins(dp(4), 0, dp(4), 0);
+
+        controls.addView(play, new LinearLayout.LayoutParams(bp));
+        controls.addView(pause, new LinearLayout.LayoutParams(bp));
+        controls.addView(stop, new LinearLayout.LayoutParams(bp));
+
+        play.setOnClickListener(v -> setRobotStatus("Robot berjalan"));
+        pause.setOnClickListener(v -> setRobotStatus("Robot dijeda"));
+        stop.setOnClickListener(v -> setRobotStatus("Robot berhenti"));
+
+        content.addView(controls);
+
+        // STATISTICS
+        content.addView(sectionTitle("Statistik"));
+
+        LinearLayout stats = new LinearLayout(this);
+        stats.setOrientation(LinearLayout.HORIZONTAL);
+        stats.setGravity(Gravity.CENTER);
+
+        stats.addView(statCard("0", "Pesan Masuk"));
+        stats.addView(statCard("0", "Dibalas"));
+        stats.addView(statCard("0", "Akun Diproses"));
+
+        content.addView(stats);
+
+        // ACCOUNT
+        content.addView(sectionTitle("DAFTAR AKUN"));
+
+        LinearLayout accountCard = card();
+
+        TextView accountEmpty = emptyText(
+                "Belum ada akun\\n\\nTambah akun akan tersedia pada tahap berikutnya."
+        );
+        accountCard.addView(accountEmpty);
+
+        TextView addAccount = text("+ TAMBAH AKUN", 13,
+                Color.rgb(55, 60, 68), true);
+        addAccount.setGravity(Gravity.CENTER);
+        addAccount.setPadding(dp(12), dp(13), dp(12), dp(13));
+        addAccount.setBackground(border(
+                Color.rgb(248, 249, 250),
+                Color.rgb(220, 224, 229), 12));
+
+        addAccount.setOnClickListener(v ->
+                Toast.makeText(this,
+                        "Placeholder Tahap 1 — belum aktif",
+                        Toast.LENGTH_SHORT).show());
+
+        accountCard.addView(addAccount);
+
+        content.addView(accountCard);
+
+        // TEMPLATE
+        content.addView(sectionTitle("TEMPLATE BALASAN"));
+
+        LinearLayout templateCard = card();
+
+        TextView templateEmpty = emptyText(
+                "Belum ada template balasan\\n\\nTemplate otomatis belum aktif pada Tahap 1."
+        );
+        templateCard.addView(templateEmpty);
+
+        TextView templatePlaceholder = text("+ TEMPLATE", 13,
+                Color.rgb(55, 60, 68), true);
+        templatePlaceholder.setGravity(Gravity.CENTER);
+        templatePlaceholder.setPadding(dp(12), dp(13), dp(12), dp(13));
+        templatePlaceholder.setBackground(border(
+                Color.rgb(248, 249, 250),
+                Color.rgb(220, 224, 229), 12));
+
+        templatePlaceholder.setOnClickListener(v ->
+                Toast.makeText(this,
+                        "Placeholder Tahap 1 — belum aktif",
+                        Toast.LENGTH_SHORT).show());
+
+        templateCard.addView(templatePlaceholder);
+
+        content.addView(templateCard);
+
+        // BOTTOM SPACING
+        Space bottom = new Space(this);
+        content.addView(bottom, new LinearLayout.LayoutParams(
+                1, dp(24)));
+
+        scroll.addView(content);
+        root.addView(scroll, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
+
+        // NAVIGATION
+        LinearLayout nav = new LinearLayout(this);
+        nav.setOrientation(LinearLayout.HORIZONTAL);
+        nav.setGravity(Gravity.CENTER);
+        nav.setPadding(dp(6), dp(7), dp(6), dp(7));
+        nav.setBackground(ColorDrawableHelper.white());
+
+        addNavItem(nav, "Dashboard", true);
+        addNavItem(nav, "Akun", false);
+        addNavItem(nav, "Template", false);
+        addNavItem(nav, "Pengaturan", false);
+
+        root.addView(nav, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(62)));
+
+        setContentView(root);
+    }
+
+    private void addNavItem(LinearLayout nav, String label, boolean active) {
+        TextView item = text(label, 11,
+                active ? Color.rgb(20, 24, 29) : Color.rgb(120, 126, 134),
+                active);
+        item.setGravity(Gravity.CENTER);
+        item.setBackground(active
+                ? bg(Color.rgb(238, 240, 243), 12)
+                : bg(Color.TRANSPARENT, 12));
+
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.MATCH_PARENT, 1);
+        p.setMargins(dp(3), 0, dp(3), 0);
+        nav.addView(item, p);
+
+        item.setOnClickListener(v -> {
+            if (!active) {
+                Toast.makeText(this,
+                        label + " — placeholder Tahap 1",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setRobotStatus(String status) {
+        statusText.setText(status);
+        if (status.equals("Robot berjalan")) {
+            statusDot.setTextColor(Color.rgb(30, 145, 75));
+        } else if (status.equals("Robot dijeda")) {
+            statusDot.setTextColor(Color.rgb(190, 135, 20));
+        } else {
+            statusDot.setTextColor(Color.rgb(95, 100, 108));
+        }
+    }
+
+    private static class ColorDrawableHelper {
+        static android.graphics.drawable.ColorDrawable white() {
+            return new android.graphics.drawable.ColorDrawable(Color.WHITE);
+        }
+    }
+}
