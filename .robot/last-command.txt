@@ -3,57 +3,37 @@ set -e
 
 SDK="$HOME/lib/android-sdk-9123335"
 
-echo "===== BATCH 1: ANDROID BUILD ENVIRONMENT ====="
+echo "===== BATCH 1.1 ====="
 echo "SDK=$SDK"
 
-if [ ! -d "$SDK" ]; then
-    echo "ERROR: SDK DIRECTORY TIDAK DITEMUKAN"
-    exit 10
-fi
-
-echo
-echo "===== SET ENVIRONMENT PERMANEN ====="
-
-touch "$HOME/.bashrc"
-
-grep -qxF 'export ANDROID_HOME="$HOME/lib/android-sdk-9123335"' "$HOME/.bashrc" || \
-echo 'export ANDROID_HOME="$HOME/lib/android-sdk-9123335"' >> "$HOME/.bashrc"
-
-grep -qxF 'export ANDROID_SDK_ROOT="$ANDROID_HOME"' "$HOME/.bashrc" || \
-echo 'export ANDROID_SDK_ROOT="$ANDROID_HOME"' >> "$HOME/.bashrc"
-
-grep -qxF 'export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"' "$HOME/.bashrc" || \
-echo 'export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"' >> "$HOME/.bashrc"
-
 export ANDROID_HOME="$SDK"
-export ANDROID_SDK_ROOT="$ANDROID_HOME"
-export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
-
-echo "ANDROID_HOME=$ANDROID_HOME"
-echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-
-echo
-echo "===== SDK PLATFORM ====="
-if [ -d "$ANDROID_HOME/platforms/android-35" ]; then
-    echo "OK: Android Platform 35"
-else
-    echo "ERROR: Android Platform 35 tidak ditemukan"
-    exit 11
-fi
-
-echo
-echo "===== BUILD TOOLS ====="
-if [ -d "$ANDROID_HOME/build-tools/35.0.0" ]; then
-    echo "OK: Build Tools 35.0.0"
-else
-    echo "ERROR: Build Tools 35.0.0 tidak ditemukan"
-    exit 12
-fi
+export ANDROID_SDK_ROOT="$SDK"
+export PATH="$SDK/cmdline-tools/bin:$SDK/platform-tools:$SDK/build-tools/35.0.0:$PATH"
 
 echo
 echo "===== SDKMANAGER ====="
-command -v sdkmanager
-sdkmanager --version
+SDKMANAGER="$SDK/cmdline-tools/bin/sdkmanager"
+
+if [ ! -x "$SDKMANAGER" ]; then
+    echo "ERROR: sdkmanager tidak ditemukan"
+    exit 20
+fi
+
+"$SDKMANAGER" --sdk_root="$SDK" --version
+
+echo
+echo "===== SDK PACKAGES ====="
+"$SDKMANAGER" --sdk_root="$SDK" --list_installed 2>&1 | head -80
+
+echo
+echo "===== PLATFORM 35 ====="
+test -d "$SDK/platforms/android-35"
+echo "OK"
+
+echo
+echo "===== BUILD TOOLS 35 ====="
+test -d "$SDK/build-tools/35.0.0"
+echo "OK"
 
 echo
 echo "===== ADB ====="
@@ -77,23 +57,13 @@ apksigner --version
 
 echo
 echo "===== JAVA ====="
-command -v java
 java -version 2>&1 | head -3
 
 echo
 echo "===== GRADLE ====="
-command -v gradle
 gradle --version | head -12
 
 echo
-echo "===== DEVICE ====="
-echo "Manufacturer: $(getprop ro.product.manufacturer)"
-echo "Model       : $(getprop ro.product.model)"
-echo "Android     : $(getprop ro.build.version.release)"
-echo "SDK         : $(getprop ro.build.version.sdk)"
-echo "ABI         : $(getprop ro.product.cpu.abi)"
-
-echo
-echo "===== BATCH 1 SELESAI ====="
-echo "ANDROID BUILD ENVIRONMENT SIAP"
+echo "===== HASIL ====="
+echo "ANDROID BUILD ENVIRONMENT VERIFIED"
 
