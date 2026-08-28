@@ -1,15 +1,18 @@
-===== BATCH 3: MASTER UI DASHBOARD =====
+===== BATCH 3.1: GRADLE WRAPPER + MASTER UI BUILD =====
 
-===== MAIN ACTIVITY =====
+===== CHECK PROJECT =====
+Project source: OK
 
-===== ANDROID MANIFEST =====
+===== CREATE GRADLE WRAPPER =====
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 
-===== STYLE =====
+FAILURE: Build failed with an exception.
 
-===== VERIFY SOURCE =====
-/data/data/com.termux/files/home/robot-messenger-facebook/app/src/main/java/com/robotmessenger/facebook/MainActivity.java
-/data/data/com.termux/files/home/robot-messenger-facebook/app/src/main/res/values/styles.xml
-/data/data/com.termux/files/home/robot-messenger-facebook/app/src/main/AndroidManifest.xml
+* What went wrong:
+Could not dispatch a message to the daemon.
 
-===== COMPILE CHECK =====
-bash: line 401: ./gradlew: No such file or directory
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
