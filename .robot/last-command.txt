@@ -1,51 +1,177 @@
 
-echo "===== BATCH 1.2: BINARY DIAGNOSTIC ====="
+set -e
 
-SDK="$HOME/lib/android-sdk-9123335"
+echo "===== BATCH 2: ANDROID PROJECT FOUNDATION ====="
 
-echo
-echo "===== DEVICE ARCH ====="
-uname -m
-getprop ro.product.cpu.abi
-getprop ro.product.cpu.abilist
+PROJECT="$HOME/robot-messenger-facebook"
+APP="$PROJECT/app"
 
-echo
-echo "===== TERMUX ARCH ====="
-dpkg --print-architecture
+export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
 
 echo
-echo "===== ADB SDK FILE ====="
-file "$SDK/platform-tools/adb" 2>&1 || true
-ls -lh "$SDK/platform-tools/adb" 2>&1 || true
+echo "===== CLEAN FOUNDATION FILES ====="
+
+mkdir -p "$APP/src/main/java/com/robotmessenger/facebook"
+mkdir -p "$APP/src/main/res/values"
+
+cat > settings.gradle <<'EOF'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "RobotMessengerFacebook"
+include(":app")
+EOF
+
+cat > build.gradle <<'EOF'
+plugins {
+    id 'com.android.application' version '8.6.1' apply false
+}
+EOF
+
+cat > gradle.properties <<'EOF'
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+EOF
+
+cat > app/build.gradle <<'EOF'
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.robotmessenger.facebook'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.robotmessenger.facebook'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '0.1'
+    }
+}
+EOF
+
+cat > app/src/main/AndroidManifest.xml <<'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:label="ROBOT MESSENGER FACEBOOK"
+        android:theme="@style/AppTheme"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
+</manifest>
+EOF
+
+cat > app/src/main/res/values/styles.xml <<'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+    </style>
+</resources>
+EOF
+
+cat > app/src/main/java/com/robotmessenger/facebook/MainActivity.java <<'EOF'
+package com.robotmessenger.facebook;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        TextView textView = new TextView(this);
+        textView.setText("ROBOT MESSENGER FACEBOOK");
+        textView.setTextSize(22);
+        textView.setPadding(32, 32, 32, 32);
+
+        setContentView(textView);
+    }
+}
+EOF
+
+cat > .gitignore <<'EOF'
+.gradle/
+build/
+**/build/
+local.properties
+*.iml
+.idea/
+.DS_Store
+
+# Secrets
+*.env
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.jks
+keystore.properties
+
+# Facebook sensitive data
+cookies*
+session*
+EOF
 
 echo
-echo "===== AAPT2 SDK FILE ====="
-file "$SDK/build-tools/35.0.0/aapt2" 2>&1 || true
-ls -lh "$SDK/build-tools/35.0.0/aapt2" 2>&1 || true
+echo "===== PROJECT STRUCTURE ====="
+find . -maxdepth 5 -type f \
+    ! -path "./.git/*" \
+    ! -path "./.robot/*" \
+    | sort
 
 echo
-echo "===== TERMUX AAPT2 ====="
-command -v aapt2
-file "$(command -v aapt2)" 2>&1 || true
+echo "===== GRADLE VERSION ====="
+gradle --version | head -12
 
 echo
-echo "===== TERMUX D8 ====="
-command -v d8
-file "$(command -v d8)" 2>&1 || true
+echo "===== BUILD DEBUG APK ====="
+gradle :app:assembleDebug --stacktrace
 
 echo
-echo "===== TERMUX APKSIGNER ====="
-command -v apksigner
-file "$(command -v apksigner)" 2>&1 || true
+echo "===== APK RESULT ====="
+find app/build/outputs/apk -type f -maxdepth 3 -print -exec ls -lh {} \;
 
 echo
-echo "===== SDK DIRECTORY ====="
-echo "$SDK"
-
-echo
-echo "===== CMDLINE TOOLS ====="
-"$SDK/cmdline-tools/bin/sdkmanager" --sdk_root="$SDK" --version 2>&1 || true
-
-echo
-echo "===== DIAGNOSTIC SELESAI ====="
+echo "===== BATCH 2 SUCCESS ====="
+echo "ANDROID PROJECT FOUNDATION BUILD OK"
 
