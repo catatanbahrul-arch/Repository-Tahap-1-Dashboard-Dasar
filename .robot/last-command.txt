@@ -1,66 +1,66 @@
 
 set +e
 
-echo "===== BATCH 2.1: GRADLE DIAGNOSTIC + FIX ====="
-
-export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
-export ANDROID_SDK_ROOT="$ANDROID_HOME"
-export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
+echo "===== BATCH 2.2: GRADLE/JAVA ENV DIAGNOSTIC ====="
 
 echo
-echo "===== STOP OLD GRADLE DAEMONS ====="
-gradle --stop 2>&1 || true
+echo "===== MEMORY ====="
+free -h
+echo
+cat /proc/meminfo | head -20
 
 echo
-echo "===== GRADLE CONFIG ====="
-cat gradle.properties
+echo "===== PROCESS LIMIT ====="
+ulimit -a
 
 echo
-echo "===== ROOT BUILD ====="
-cat build.gradle
+echo "===== JAVA PROCESSES ====="
+ps -ef | grep -E "[j]ava|[g]radle" || true
 
 echo
-echo "===== APP BUILD ====="
-cat app/build.gradle
+echo "===== JAVA HOME ====="
+echo "JAVA_HOME=$JAVA_HOME"
+command -v java
+readlink -f "$(command -v java)" 2>/dev/null || true
 
 echo
-echo "===== SETTINGS ====="
-cat settings.gradle
+echo "===== JAVA VERSION ====="
+java -version 2>&1
 
 echo
-echo "===== MANIFEST ====="
-cat app/src/main/AndroidManifest.xml
+echo "===== JAVA SIMPLE TEST ====="
+cat > /tmp/TestJava.java <<'EOF'
+public class TestJava {
+    public static void main(String[] args) {
+        System.out.println("JAVA_PROCESS_OK");
+        System.out.println("Available processors: " + Runtime.getRuntime().availableProcessors());
+        System.out.println("Max memory: " + Runtime.getRuntime().maxMemory());
+        System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+    }
+}
+EOF
+
+javac /tmp/TestJava.java 2>&1
+java -cp /tmp TestJava 2>&1
 
 echo
-echo "===== JAVA ====="
-java -version 2>&1 | head -3
+echo "===== GRADLE VERSION ====="
+gradle --version 2>&1 | head -20
 
 echo
-echo "===== SDK ====="
-echo "ANDROID_HOME=$ANDROID_HOME"
-test -d "$ANDROID_HOME/platforms/android-35" && echo "Platform 35: OK"
-test -d "$ANDROID_HOME/build-tools/35.0.0" && echo "Build Tools 35: OK"
+echo "===== GRADLE DAEMON CONFIG ====="
+find "$HOME/.gradle" -maxdepth 2 -type f \
+    \( -name "gradle.properties" -o -name "*.lock" \) \
+    -print 2>/dev/null | head -30
 
 echo
-echo "===== BUILD WITHOUT DAEMON ====="
-gradle --no-daemon :app:assembleDebug --stacktrace
-
-EXIT_CODE=$?
+echo "===== PROJECT FILES ====="
+find . -maxdepth 3 -type f \
+    ! -path "./.git/*" \
+    ! -path "./.robot/*" \
+    | sort
 
 echo
-echo "===== BUILD EXIT CODE ====="
-echo "$EXIT_CODE"
-
-if [ "$EXIT_CODE" -eq 0 ]; then
-    echo
-    echo "===== APK ====="
-    find app/build/outputs/apk -type f -print -exec ls -lh {} \;
-    echo
-    echo "===== BATCH 2.1 SUCCESS ====="
-else
-    echo
-    echo "===== BATCH 2.1 FAILED ====="
-fi
-
-exit "$EXIT_CODE"
+echo "===== DIAGNOSTIC EXIT ====="
+echo "DIAGNOSTIC_COMPLETE"
 
