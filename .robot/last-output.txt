@@ -1,63 +1,39 @@
-===== BATCH 1.1 =====
-SDK=/data/data/com.termux/files/home/lib/android-sdk-9123335
+===== BATCH 1.2: BINARY DIAGNOSTIC =====
 
-===== SDKMANAGER =====
+===== DEVICE ARCH =====
+aarch64
+arm64-v8a
+arm64-v8a,armeabi-v7a,armeabi
+
+===== TERMUX ARCH =====
+aarch64
+
+===== ADB SDK FILE =====
+bash: line 18: file: command not found
+-rwx--x--x. 1 u0_a369 u0_a369 11M Aug 27 01:21 /data/data/com.termux/files/home/lib/android-sdk-9123335/platform-tools/adb
+
+===== AAPT2 SDK FILE =====
+bash: line 23: file: command not found
+-rwx--x--x. 1 u0_a369 u0_a369 6.1M Aug 27 01:21 /data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/aapt2
+
+===== TERMUX AAPT2 =====
+/data/data/com.termux/files/usr/bin/aapt2
+bash: line 29: file: command not found
+
+===== TERMUX D8 =====
+/data/data/com.termux/files/usr/bin/d8
+bash: line 34: file: command not found
+
+===== TERMUX APKSIGNER =====
+/data/data/com.termux/files/usr/bin/apksigner
+bash: line 39: file: command not found
+
+===== SDK DIRECTORY =====
+/data/data/com.termux/files/home/lib/android-sdk-9123335
+
+===== CMDLINE TOOLS =====
 Warning: This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
 8.0
 
 
-===== SDK PACKAGES =====
-Warning: This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
-Loading package information...                                                  Loading local repository...                                                     [=========                              ] 25% Loading local repository...       [=========                              ] 25% Fetch remote repository...        [=======================================] 100% Fetch remote repository...       
-Installed packages:
-  Path                 | Version | Description                | Location            
-  -------              | ------- | -------                    | -------             
-  build-tools;34.0.0   | 34.0.0  | Android SDK Build-Tools 34 | build-tools/34.0.0  
-  build-tools;35.0.0   | 35.0.0  | Android SDK Build-Tools 35 | build-tools/35.0.0  
-  platform-tools       | 37.0.1  | Android SDK Platform-Tools | platform-tools      
-  platforms;android-35 | 2       | Android SDK Platform 35    | platforms/android-35
-
-
-===== PLATFORM 35 =====
-OK
-
-===== BUILD TOOLS 35 =====
-OK
-
-===== ADB =====
-/data/data/com.termux/files/home/lib/android-sdk-9123335/platform-tools/adb
-bash: line 41: /data/data/com.termux/files/home/lib/android-sdk-9123335/platform-tools/adb: cannot execute binary file: Exec format error
-
-===== AAPT2 =====
-/data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/aapt2
-bash: line 46: /data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/aapt2: cannot execute binary file: Exec format error
-
-===== D8 =====
-/data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/d8
-D8 8.6.2-dev (build abaab469b5ebd4dd2bb91ba0ed6f45277faae4ca from go/r8bot (luci-r8-custom-ci-archive-0-77gl))
-
-===== APKSIGNER =====
-/data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/apksigner
-0.9
-
-===== JAVA =====
-openjdk version "21.0.12" 2026-07-21
-OpenJDK Runtime Environment (build 21.0.12)
-OpenJDK 64-Bit Server VM (build 21.0.12, mixed mode)
-
-===== GRADLE =====
-
-------------------------------------------------------------
-Gradle 9.7.1
-------------------------------------------------------------
-
-Build time:    2026-08-19 14:16:09 UTC
-Revision:      92f0512e7f06d84621afba191f75e265363890cf
-
-Kotlin:        2.4.0
-Groovy:        4.0.32
-Ant:           Apache Ant(TM) version 1.10.17 compiled on April 6 2026
-Launcher JVM:  21.0.12 (Termux 21.0.12)
-
-===== HASIL =====
-ANDROID BUILD ENVIRONMENT VERIFIED
+===== DIAGNOSTIC SELESAI =====

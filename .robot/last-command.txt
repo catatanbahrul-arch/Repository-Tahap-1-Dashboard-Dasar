@@ -1,69 +1,51 @@
 
-set -e
+echo "===== BATCH 1.2: BINARY DIAGNOSTIC ====="
 
 SDK="$HOME/lib/android-sdk-9123335"
 
-echo "===== BATCH 1.1 ====="
-echo "SDK=$SDK"
-
-export ANDROID_HOME="$SDK"
-export ANDROID_SDK_ROOT="$SDK"
-export PATH="$SDK/cmdline-tools/bin:$SDK/platform-tools:$SDK/build-tools/35.0.0:$PATH"
+echo
+echo "===== DEVICE ARCH ====="
+uname -m
+getprop ro.product.cpu.abi
+getprop ro.product.cpu.abilist
 
 echo
-echo "===== SDKMANAGER ====="
-SDKMANAGER="$SDK/cmdline-tools/bin/sdkmanager"
-
-if [ ! -x "$SDKMANAGER" ]; then
-    echo "ERROR: sdkmanager tidak ditemukan"
-    exit 20
-fi
-
-"$SDKMANAGER" --sdk_root="$SDK" --version
+echo "===== TERMUX ARCH ====="
+dpkg --print-architecture
 
 echo
-echo "===== SDK PACKAGES ====="
-"$SDKMANAGER" --sdk_root="$SDK" --list_installed 2>&1 | head -80
+echo "===== ADB SDK FILE ====="
+file "$SDK/platform-tools/adb" 2>&1 || true
+ls -lh "$SDK/platform-tools/adb" 2>&1 || true
 
 echo
-echo "===== PLATFORM 35 ====="
-test -d "$SDK/platforms/android-35"
-echo "OK"
+echo "===== AAPT2 SDK FILE ====="
+file "$SDK/build-tools/35.0.0/aapt2" 2>&1 || true
+ls -lh "$SDK/build-tools/35.0.0/aapt2" 2>&1 || true
 
 echo
-echo "===== BUILD TOOLS 35 ====="
-test -d "$SDK/build-tools/35.0.0"
-echo "OK"
-
-echo
-echo "===== ADB ====="
-command -v adb
-adb version | head -3
-
-echo
-echo "===== AAPT2 ====="
+echo "===== TERMUX AAPT2 ====="
 command -v aapt2
-aapt2 version | head -2
+file "$(command -v aapt2)" 2>&1 || true
 
 echo
-echo "===== D8 ====="
+echo "===== TERMUX D8 ====="
 command -v d8
-d8 --version 2>&1 | head -2
+file "$(command -v d8)" 2>&1 || true
 
 echo
-echo "===== APKSIGNER ====="
+echo "===== TERMUX APKSIGNER ====="
 command -v apksigner
-apksigner --version
+file "$(command -v apksigner)" 2>&1 || true
 
 echo
-echo "===== JAVA ====="
-java -version 2>&1 | head -3
+echo "===== SDK DIRECTORY ====="
+echo "$SDK"
 
 echo
-echo "===== GRADLE ====="
-gradle --version | head -12
+echo "===== CMDLINE TOOLS ====="
+"$SDK/cmdline-tools/bin/sdkmanager" --sdk_root="$SDK" --version 2>&1 || true
 
 echo
-echo "===== HASIL ====="
-echo "ANDROID BUILD ENVIRONMENT VERIFIED"
+echo "===== DIAGNOSTIC SELESAI ====="
 
