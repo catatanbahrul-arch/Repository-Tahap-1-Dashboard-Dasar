@@ -1,113 +1,112 @@
 
 set -u
 
-echo "===== BATCH 3.2: GRADLE 8.7 DIRECT BUILD ====="
+echo "===== BATCH 3.3: DIRECT JVM BUILD TEST ====="
 
 export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
 
-GRADLE_HOME="$HOME/.robot-gradle/gradle-8.7"
-GRADLE_ZIP="$HOME/.robot-gradle/gradle-8.7-bin.zip"
+GRADLE="$HOME/.robot-gradle/gradle-8.7/bin/gradle"
 
 echo
-echo "===== SOURCE CHECK ====="
-test -f settings.gradle
-test -f build.gradle
-test -f app/build.gradle
-test -f app/src/main/AndroidManifest.xml
-test -f app/src/main/java/com/robotmessenger/facebook/MainActivity.java
-echo "SOURCE_OK"
+echo "===== ENV ====="
+echo "JAVA_HOME=$JAVA_HOME"
+echo "ANDROID_HOME=$ANDROID_HOME"
+echo "GRADLE=$GRADLE"
 
 echo
-echo "===== GRADLE 8.7 SETUP ====="
+echo "===== JAVA DIRECT TEST ====="
 
-mkdir -p "$HOME/.robot-gradle"
+mkdir -p .robot/java-test
 
-if [ ! -x "$GRADLE_HOME/bin/gradle" ]; then
+cat > .robot/java-test/TestJava.java <<'EOF'
+public class TestJava {
+    public static void main(String[] args) {
+        System.out.println("JAVA_OK");
+        System.out.println("PID=" + ProcessHandle.current().pid());
+        System.out.println("PROCESSORS=" + Runtime.getRuntime().availableProcessors());
+        System.out.println("MAX_MEMORY=" + Runtime.getRuntime().maxMemory());
+    }
+}
+EOF
 
-    if [ ! -f "$GRADLE_ZIP" ]; then
-        echo "Downloading Gradle 8.7..."
-        curl -L \
-            --fail \
-            --retry 3 \
-            -o "$GRADLE_ZIP" \
-            https://services.gradle.org/distributions/gradle-8.7-bin.zip
+javac .robot/java-test/TestJava.java || exit 50
+java -cp .robot/java-test TestJava || exit 51
 
-        if [ "$?" -ne 0 ]; then
-            echo "ERROR: Gradle download failed"
-            exit 40
-        fi
-    fi
+echo
+echo "===== GRADLE HELP TEST ====="
 
-    rm -rf "$GRADLE_HOME"
+GRADLE_OPTS="-Xmx512m -Dfile.encoding=UTF-8" \
+"$GRADLE" \
+    --no-daemon \
+    --offline \
+    help
 
-    unzip -q "$GRADLE_ZIP" -d "$HOME/.robot-gradle"
+HELP_CODE=$?
 
-    if [ ! -x "$GRADLE_HOME/bin/gradle" ]; then
-        echo "ERROR: Gradle 8.7 extraction failed"
-        exit 41
-    fi
+echo "GRADLE_HELP_EXIT=$HELP_CODE"
+
+if [ "$HELP_CODE" -ne 0 ]; then
+    echo "GRADLE_BASIC_TEST_FAILED"
+    exit "$HELP_CODE"
 fi
 
-echo "GRADLE_HOME=$GRADLE_HOME"
-
 echo
-echo "===== GRADLE VERSION ====="
-"$GRADLE_HOME/bin/gradle" --version | head -20
+echo "===== ANDROID TASK DISCOVERY ====="
 
-echo
-echo "===== SDK CHECK ====="
-echo "ANDROID_HOME=$ANDROID_HOME"
+GRADLE_OPTS="-Xmx512m -Dfile.encoding=UTF-8" \
+"$GRADLE" \
+    --no-daemon \
+    --offline \
+    :app:tasks \
+    --stacktrace
 
-test -d "$ANDROID_HOME/platforms/android-35"
-echo "Platform 35: OK"
+TASK_CODE=$?
 
-test -d "$ANDROID_HOME/build-tools/35.0.0"
-echo "Build Tools 35.0.0: OK"
+echo "ANDROID_TASK_EXIT=$TASK_CODE"
 
-echo
-echo "===== CLEAN OLD BUILD ====="
-rm -rf app/build
+if [ "$TASK_CODE" -ne 0 ]; then
+    echo "ANDROID_PLUGIN_TEST_FAILED"
+    exit "$TASK_CODE"
+fi
 
 echo
 echo "===== BUILD DEBUG APK ====="
 
-"$GRADLE_HOME/bin/gradle" \
+GRADLE_OPTS="-Xmx512m -Dfile.encoding=UTF-8" \
+"$GRADLE" \
     --no-daemon \
+    --offline \
     --max-workers=1 \
-    :app:assembleDebug
+    :app:assembleDebug \
+    --stacktrace
 
 BUILD_CODE=$?
 
 echo
-echo "===== BUILD EXIT CODE ====="
-echo "$BUILD_CODE"
+echo "BUILD_EXIT_CODE=$BUILD_CODE"
 
-if [ "$BUILD_CODE" -ne 0 ]; then
-    echo "BUILD_FAILED"
-    exit "$BUILD_CODE"
+if [ "$BUILD_CODE" -eq 0 ]; then
+
+    echo
+    echo "===== APK ====="
+
+    find app/build/outputs/apk \
+        -type f \
+        -name "*.apk" \
+        -print \
+        -exec ls -lh {} \;
+
+    echo
+    echo "BATCH_3_3_RESULT=SUCCESS"
+
+else
+
+    echo
+    echo "BATCH_3_3_RESULT=FAILED"
+
 fi
 
-echo
-echo "===== APK RESULT ====="
-
-find app/build/outputs/apk \
-    -type f \
-    -print \
-    -exec ls -lh {} \;
-
-echo
-echo "===== APK SHA256 ====="
-
-find app/build/outputs/apk \
-    -type f \
-    -name "*.apk" \
-    -exec sha256sum {} \;
-
-echo
-echo "===== BATCH 3.2 SUCCESS ====="
-echo "MASTER UI APK BUILD OK"
-
-exit 0
+exit "$BUILD_CODE"
 
