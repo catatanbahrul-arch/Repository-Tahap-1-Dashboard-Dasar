@@ -1,16 +1,27 @@
-===== SDK TOOLCHAIN =====
-ANDROID_HOME=
+===== SDK ROOT =====
+total 32
+drwx------. 8 u0_a369 u0_a369 3488 Aug 27 01:26 .
+drwx------. 4 u0_a369 u0_a369 3488 Aug 26 17:45 ..
+-rw-------. 1 u0_a369 u0_a369   16 Aug 27 01:26 .knownPackages
+drwx------. 2 u0_a369 u0_a369 3488 Aug 27 01:26 .temp
+drwx------. 4 u0_a369 u0_a369 3488 Aug 27 01:26 build-tools
+drwx------. 4 u0_a369 u0_a369 3488 Aug 26 17:43 cmdline-tools
+drwx------. 2 u0_a369 u0_a369 3488 Aug 27 01:21 licenses
+drwx------. 3 u0_a369 u0_a369 3488 Aug 27 01:21 platform-tools
+drwx------. 3 u0_a369 u0_a369 3488 Aug 27 01:21 platforms
 
-===== SDKMANAGER =====
+===== PLATFORM =====
+total 11
+drwx------. 3 u0_a369 u0_a369 3488 Aug 27 01:21 .
+drwx------. 8 u0_a369 u0_a369 3488 Aug 27 01:26 ..
+drwx------. 6 u0_a369 u0_a369 3488 Aug 27 01:21 android-35
 
-===== UNZIP =====
-/data/data/com.termux/files/usr/bin/unzip
+===== BUILD TOOLS =====
+total 14
+drwx------. 4 u0_a369 u0_a369 3488 Aug 27 01:26 .
+drwx------. 8 u0_a369 u0_a369 3488 Aug 27 01:26 ..
+drwx------. 6 u0_a369 u0_a369 3488 Aug 27 01:26 34.0.0
+drwx------. 6 u0_a369 u0_a369 3488 Aug 27 01:21 35.0.0
 
-===== CURL =====
-/data/data/com.termux/files/usr/bin/curl
-
-===== WGET =====
-/data/data/com.termux/files/usr/bin/wget
-
-===== SDK DIR =====
-drwx------. 8 u0_a369 u0_a369 3488 Aug 27 01:26 /data/data/com.termux/files/home/lib/android-sdk-9123335
+===== CMDLINE TOOLS =====
+/data/data/com.termux/files/home/lib/android-sdk-9123335/cmdline-tools/bin/sdkmanager
