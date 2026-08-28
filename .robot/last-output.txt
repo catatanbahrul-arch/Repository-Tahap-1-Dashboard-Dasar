@@ -1,1 +1,16 @@
-JEMBATAN_TERMUX_GITHUB_OK
+===== SDK TOOLCHAIN =====
+ANDROID_HOME=
+
+===== SDKMANAGER =====
+
+===== UNZIP =====
+/data/data/com.termux/files/usr/bin/unzip
+
+===== CURL =====
+/data/data/com.termux/files/usr/bin/curl
+
+===== WGET =====
+/data/data/com.termux/files/usr/bin/wget
+
+===== SDK DIR =====
+drwx------. 8 u0_a369 u0_a369 3488 Aug 27 01:26 /data/data/com.termux/files/home/lib/android-sdk-9123335
