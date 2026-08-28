@@ -1,17 +1,75 @@
-===== BATCH 3.3: DIRECT JVM BUILD TEST =====
+===== BATCH 3.4: JVM / PROCESS DIAGNOSTIC =====
 
-===== ENV =====
-JAVA_HOME=/data/data/com.termux/files/usr/lib/jvm/java-21-openjdk/
-ANDROID_HOME=/data/data/com.termux/files/home/lib/android-sdk-9123335
-GRADLE=/data/data/com.termux/files/home/.robot-gradle/gradle-8.7/bin/gradle
+===== JAVA =====
+openjdk version "21.0.12" 2026-07-21
+OpenJDK Runtime Environment (build 21.0.12)
+OpenJDK 64-Bit Server VM (build 21.0.12, mixed mode)
 
-===== JAVA DIRECT TEST =====
-JAVA_OK
-PID=32237
-PROCESSORS=8
-MAX_MEMORY=1977614336
+===== JAVAC =====
+javac 21.0.12
 
-===== GRADLE HELP TEST =====
+===== MEMORY =====
+MemTotal:        7720612 kB
+MemFree:          304896 kB
+MemAvailable:    2147644 kB
+Buffers:            1464 kB
+Cached:          2168092 kB
+SwapCached:        21220 kB
+Active:          2270080 kB
+Inactive:        1319584 kB
+Active(anon):    1503192 kB
+Inactive(anon):   381328 kB
+Active(file):     766888 kB
+Inactive(file):   938256 kB
+Unevictable:      367780 kB
+Mlocked:          367780 kB
+SwapTotal:       7864316 kB
+SwapFree:        4612888 kB
+Dirty:               924 kB
+Writeback:             0 kB
+AnonPages:       1784396 kB
+Mapped:          1225340 kB
+
+===== PROCESS LIMITS =====
+real-time non-blocking time  (microseconds, -R) unlimited
+core file size              (blocks, -c) 0
+data seg size               (kbytes, -d) unlimited
+scheduling priority                 (-e) 40
+file size                   (blocks, -f) unlimited
+pending signals                     (-i) 27728
+max locked memory           (kbytes, -l) unlimited
+max memory size             (kbytes, -m) unlimited
+open files                          (-n) 32768
+pipe size                (512 bytes, -p) 8
+POSIX message queues         (bytes, -q) 819200
+real-time priority                  (-r) 0
+stack size                  (kbytes, -s) 8192
+cpu time                   (seconds, -t) unlimited
+max user processes                  (-u) 27728
+virtual memory              (kbytes, -v) unlimited
+file locks                          (-x) unlimited
+
+===== PID LIMIT =====
+
+===== CURRENT PROCESSES =====
+
+===== GRADLE VERSION =====
+
+------------------------------------------------------------
+Gradle 8.7
+------------------------------------------------------------
+
+Build time:   2024-03-22 15:52:46 UTC
+Revision:     650af14d7653aa949fce5e886e685efc9cf97c10
+
+Kotlin:       1.9.22
+Groovy:       3.0.17
+Ant:          Apache Ant(TM) version 1.10.13 compiled on January 4 2023
+JVM:          21.0.12 (Termux 21.0.12)
+OS:           Linux 6.6.118-android15-8-o-ga031df45165f-4k aarch64
+
+
+===== GRADLE HELP WITH VERY SMALL JVM =====
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 
 FAILURE: Build failed with an exception.
@@ -20,9 +78,45 @@ FAILURE: Build failed with an exception.
 The first result from the daemon was empty. The daemon process may have died or a non-daemon process is reusing the same port.
 
 * Try:
-> Run with --stacktrace option to get the stack trace.
 > Run with --info or --debug option to get more log output.
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.launcher.daemon.client.DaemonInitialConnectException: The first result from the daemon was empty. The daemon process may have died or a non-daemon process is reusing the same port.
+	at org.gradle.launcher.daemon.client.DaemonClient.executeBuild(DaemonClient.java:193)
+	at org.gradle.launcher.daemon.client.SingleUseDaemonClient.execute(SingleUseDaemonClient.java:54)
+	at org.gradle.launcher.daemon.client.SingleUseDaemonClient.execute(SingleUseDaemonClient.java:37)
+	at org.gradle.launcher.cli.RunBuildAction.run(RunBuildAction.java:57)
+	at org.gradle.internal.Actions$RunnableActionAdapter.execute(Actions.java:167)
+	at org.gradle.launcher.cli.DefaultCommandLineActionFactory$ParseAndBuildAction.execute(DefaultCommandLineActionFactory.java:259)
+	at org.gradle.launcher.cli.DefaultCommandLineActionFactory$ParseAndBuildAction.execute(DefaultCommandLineActionFactory.java:230)
+	at org.gradle.launcher.cli.DebugLoggerWarningAction.execute(DebugLoggerWarningAction.java:74)
+	at org.gradle.launcher.cli.DebugLoggerWarningAction.execute(DebugLoggerWarningAction.java:30)
+	at org.gradle.launcher.cli.WelcomeMessageAction.execute(WelcomeMessageAction.java:96)
+	at org.gradle.launcher.cli.WelcomeMessageAction.execute(WelcomeMessageAction.java:40)
+	at org.gradle.launcher.cli.NativeServicesInitializingAction.execute(NativeServicesInitializingAction.java:44)
+	at org.gradle.launcher.cli.NativeServicesInitializingAction.execute(NativeServicesInitializingAction.java:26)
+	at org.gradle.launcher.cli.ExceptionReportingAction.execute(ExceptionReportingAction.java:41)
+	at org.gradle.launcher.cli.ExceptionReportingAction.execute(ExceptionReportingAction.java:26)
+	at org.gradle.launcher.cli.DefaultCommandLineActionFactory$WithLogging.execute(DefaultCommandLineActionFactory.java:361)
+	at org.gradle.launcher.Main.doAction(Main.java:35)
+	at org.gradle.launcher.bootstrap.EntryPoint.run(EntryPoint.java:50)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.gradle.launcher.bootstrap.ProcessBootstrap.runNoExit(ProcessBootstrap.java:60)
+	at org.gradle.launcher.bootstrap.ProcessBootstrap.run(ProcessBootstrap.java:37)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.gradle.launcher.GradleMain.main(GradleMain.java:34)
+
+
+===== RESULT =====
 GRADLE_HELP_EXIT=1
-GRADLE_BASIC_TEST_FAILED
+
+===== RECENT KERNEL / PROCESS ERRORS =====
+08-28 14:06:27.444  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
+08-28 14:06:27.504  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
+08-28 14:06:27.606  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
+08-28 14:06:27.618  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
+08-28 14:06:27.672  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference

@@ -1,112 +1,54 @@
 
-set -u
+set +e
 
-echo "===== BATCH 3.3: DIRECT JVM BUILD TEST ====="
-
-export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
-export ANDROID_SDK_ROOT="$ANDROID_HOME"
-export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
-
-GRADLE="$HOME/.robot-gradle/gradle-8.7/bin/gradle"
+echo "===== BATCH 3.4: JVM / PROCESS DIAGNOSTIC ====="
 
 echo
-echo "===== ENV ====="
-echo "JAVA_HOME=$JAVA_HOME"
-echo "ANDROID_HOME=$ANDROID_HOME"
-echo "GRADLE=$GRADLE"
+echo "===== JAVA ====="
+java -version 2>&1
 
 echo
-echo "===== JAVA DIRECT TEST ====="
-
-mkdir -p .robot/java-test
-
-cat > .robot/java-test/TestJava.java <<'EOF'
-public class TestJava {
-    public static void main(String[] args) {
-        System.out.println("JAVA_OK");
-        System.out.println("PID=" + ProcessHandle.current().pid());
-        System.out.println("PROCESSORS=" + Runtime.getRuntime().availableProcessors());
-        System.out.println("MAX_MEMORY=" + Runtime.getRuntime().maxMemory());
-    }
-}
-EOF
-
-javac .robot/java-test/TestJava.java || exit 50
-java -cp .robot/java-test TestJava || exit 51
+echo "===== JAVAC ====="
+javac -version 2>&1
 
 echo
-echo "===== GRADLE HELP TEST ====="
+echo "===== MEMORY ====="
+cat /proc/meminfo | head -20
 
-GRADLE_OPTS="-Xmx512m -Dfile.encoding=UTF-8" \
-"$GRADLE" \
+echo
+echo "===== PROCESS LIMITS ====="
+ulimit -a
+
+echo
+echo "===== PID LIMIT ====="
+cat /proc/sys/kernel/pid_max 2>/dev/null || true
+
+echo
+echo "===== CURRENT PROCESSES ====="
+ps -A -o PID,PPID,USER,STAT,RSS,NAME 2>/dev/null | head -50
+
+echo
+echo "===== GRADLE VERSION ====="
+$HOME/.robot-gradle/gradle-8.7/bin/gradle --version
+
+echo
+echo "===== GRADLE HELP WITH VERY SMALL JVM ====="
+
+GRADLE_OPTS="-Xmx256m -Xms64m -Dfile.encoding=UTF-8" \
+$HOME/.robot-gradle/gradle-8.7/bin/gradle \
     --no-daemon \
-    --offline \
+    --stacktrace \
     help
 
-HELP_CODE=$?
-
-echo "GRADLE_HELP_EXIT=$HELP_CODE"
-
-if [ "$HELP_CODE" -ne 0 ]; then
-    echo "GRADLE_BASIC_TEST_FAILED"
-    exit "$HELP_CODE"
-fi
+CODE=$?
 
 echo
-echo "===== ANDROID TASK DISCOVERY ====="
-
-GRADLE_OPTS="-Xmx512m -Dfile.encoding=UTF-8" \
-"$GRADLE" \
-    --no-daemon \
-    --offline \
-    :app:tasks \
-    --stacktrace
-
-TASK_CODE=$?
-
-echo "ANDROID_TASK_EXIT=$TASK_CODE"
-
-if [ "$TASK_CODE" -ne 0 ]; then
-    echo "ANDROID_PLUGIN_TEST_FAILED"
-    exit "$TASK_CODE"
-fi
+echo "===== RESULT ====="
+echo "GRADLE_HELP_EXIT=$CODE"
 
 echo
-echo "===== BUILD DEBUG APK ====="
+echo "===== RECENT KERNEL / PROCESS ERRORS ====="
+logcat -d -t 300 2>/dev/null | grep -Ei "killed|kill|lowmemory|oom|fatal|gradle|java" | tail -80
 
-GRADLE_OPTS="-Xmx512m -Dfile.encoding=UTF-8" \
-"$GRADLE" \
-    --no-daemon \
-    --offline \
-    --max-workers=1 \
-    :app:assembleDebug \
-    --stacktrace
-
-BUILD_CODE=$?
-
-echo
-echo "BUILD_EXIT_CODE=$BUILD_CODE"
-
-if [ "$BUILD_CODE" -eq 0 ]; then
-
-    echo
-    echo "===== APK ====="
-
-    find app/build/outputs/apk \
-        -type f \
-        -name "*.apk" \
-        -print \
-        -exec ls -lh {} \;
-
-    echo
-    echo "BATCH_3_3_RESULT=SUCCESS"
-
-else
-
-    echo
-    echo "BATCH_3_3_RESULT=FAILED"
-
-fi
-
-exit "$BUILD_CODE"
+exit "$CODE"
 
