@@ -1,49 +1,93 @@
 
-set -e
+set -u
 
-echo "===== BATCH 3.1: GRADLE WRAPPER + MASTER UI BUILD ====="
+echo "===== BATCH 3.2: GRADLE 8.7 DIRECT BUILD ====="
 
 export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
 
+GRADLE_HOME="$HOME/.robot-gradle/gradle-8.7"
+GRADLE_ZIP="$HOME/.robot-gradle/gradle-8.7-bin.zip"
+
 echo
-echo "===== CHECK PROJECT ====="
+echo "===== SOURCE CHECK ====="
 test -f settings.gradle
 test -f build.gradle
 test -f app/build.gradle
 test -f app/src/main/AndroidManifest.xml
 test -f app/src/main/java/com/robotmessenger/facebook/MainActivity.java
-
-echo "Project source: OK"
-
-echo
-echo "===== CREATE GRADLE WRAPPER ====="
-
-gradle --no-daemon wrapper \
-    --gradle-version 8.7 \
-    --distribution-type bin
-
-test -f gradlew
-chmod +x gradlew
-
-echo "gradlew: OK"
+echo "SOURCE_OK"
 
 echo
-echo "===== WRAPPER VERSION ====="
-./gradlew --version | head -20
+echo "===== GRADLE 8.7 SETUP ====="
+
+mkdir -p "$HOME/.robot-gradle"
+
+if [ ! -x "$GRADLE_HOME/bin/gradle" ]; then
+
+    if [ ! -f "$GRADLE_ZIP" ]; then
+        echo "Downloading Gradle 8.7..."
+        curl -L \
+            --fail \
+            --retry 3 \
+            -o "$GRADLE_ZIP" \
+            https://services.gradle.org/distributions/gradle-8.7-bin.zip
+
+        if [ "$?" -ne 0 ]; then
+            echo "ERROR: Gradle download failed"
+            exit 40
+        fi
+    fi
+
+    rm -rf "$GRADLE_HOME"
+
+    unzip -q "$GRADLE_ZIP" -d "$HOME/.robot-gradle"
+
+    if [ ! -x "$GRADLE_HOME/bin/gradle" ]; then
+        echo "ERROR: Gradle 8.7 extraction failed"
+        exit 41
+    fi
+fi
+
+echo "GRADLE_HOME=$GRADLE_HOME"
 
 echo
-echo "===== BUILD MASTER UI ====="
+echo "===== GRADLE VERSION ====="
+"$GRADLE_HOME/bin/gradle" --version | head -20
 
-./gradlew \
+echo
+echo "===== SDK CHECK ====="
+echo "ANDROID_HOME=$ANDROID_HOME"
+
+test -d "$ANDROID_HOME/platforms/android-35"
+echo "Platform 35: OK"
+
+test -d "$ANDROID_HOME/build-tools/35.0.0"
+echo "Build Tools 35.0.0: OK"
+
+echo
+echo "===== CLEAN OLD BUILD ====="
+rm -rf app/build
+
+echo
+echo "===== BUILD DEBUG APK ====="
+
+"$GRADLE_HOME/bin/gradle" \
     --no-daemon \
     --max-workers=1 \
     :app:assembleDebug
 
+BUILD_CODE=$?
+
 echo
-echo "===== BUILD EXIT ====="
-echo "BUILD_EXIT_CODE=0"
+echo "===== BUILD EXIT CODE ====="
+echo "$BUILD_CODE"
+
+if [ "$BUILD_CODE" -ne 0 ]; then
+    echo "BUILD_FAILED"
+    exit "$BUILD_CODE"
+fi
 
 echo
 echo "===== APK RESULT ====="
@@ -54,20 +98,16 @@ find app/build/outputs/apk \
     -exec ls -lh {} \;
 
 echo
-echo "===== SOURCE CHECK ====="
+echo "===== APK SHA256 ====="
 
-echo "--- MainActivity.java ---"
-wc -l app/src/main/java/com/robotmessenger/facebook/MainActivity.java
-
-echo
-echo "--- Manifest ---"
-wc -l app/src/main/AndroidManifest.xml
+find app/build/outputs/apk \
+    -type f \
+    -name "*.apk" \
+    -exec sha256sum {} \;
 
 echo
-echo "--- Styles ---"
-wc -l app/src/main/res/values/styles.xml
+echo "===== BATCH 3.2 SUCCESS ====="
+echo "MASTER UI APK BUILD OK"
 
-echo
-echo "===== BATCH 3.1 SUCCESS ====="
-echo "MASTER UI DASHBOARD BUILD OK"
+exit 0
 
