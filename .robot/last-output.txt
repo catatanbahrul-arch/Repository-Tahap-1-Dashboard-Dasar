@@ -10,25 +10,25 @@ javac 21.0.12
 
 ===== MEMORY =====
 MemTotal:        7720612 kB
-MemFree:          304896 kB
-MemAvailable:    2147644 kB
-Buffers:            1464 kB
-Cached:          2168092 kB
-SwapCached:        21220 kB
-Active:          2270080 kB
-Inactive:        1319584 kB
-Active(anon):    1503192 kB
-Inactive(anon):   381328 kB
-Active(file):     766888 kB
-Inactive(file):   938256 kB
+MemFree:          170224 kB
+MemAvailable:    2198892 kB
+Buffers:            1368 kB
+Cached:          2298548 kB
+SwapCached:        20584 kB
+Active:          1821548 kB
+Inactive:        1772700 kB
+Active(anon):     925980 kB
+Inactive(anon):   767644 kB
+Active(file):     895568 kB
+Inactive(file):  1005056 kB
 Unevictable:      367780 kB
 Mlocked:          367780 kB
 SwapTotal:       7864316 kB
-SwapFree:        4612888 kB
-Dirty:               924 kB
-Writeback:             0 kB
-AnonPages:       1784396 kB
-Mapped:          1225340 kB
+SwapFree:        4304936 kB
+Dirty:              1420 kB
+Writeback:           112 kB
+AnonPages:       1659596 kB
+Mapped:          1109360 kB
 
 ===== PROCESS LIMITS =====
 real-time non-blocking time  (microseconds, -R) unlimited
@@ -115,8 +115,5 @@ org.gradle.launcher.daemon.client.DaemonInitialConnectException: The first resul
 GRADLE_HELP_EXIT=1
 
 ===== RECENT KERNEL / PROCESS ERRORS =====
-08-28 14:06:27.444  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
-08-28 14:06:27.504  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
-08-28 14:06:27.606  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
-08-28 14:06:27.618  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
-08-28 14:06:27.672  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
+08-28 14:07:10.068  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
+08-28 14:07:10.400  9709  9709 D callGcSupression: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Object java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])' on a null object reference
