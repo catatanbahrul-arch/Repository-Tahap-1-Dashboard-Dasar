@@ -1,177 +1,66 @@
 
-set -e
+set +e
 
-echo "===== BATCH 2: ANDROID PROJECT FOUNDATION ====="
-
-PROJECT="$HOME/robot-messenger-facebook"
-APP="$PROJECT/app"
+echo "===== BATCH 2.1: GRADLE DIAGNOSTIC + FIX ====="
 
 export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
 
 echo
-echo "===== CLEAN FOUNDATION FILES ====="
-
-mkdir -p "$APP/src/main/java/com/robotmessenger/facebook"
-mkdir -p "$APP/src/main/res/values"
-
-cat > settings.gradle <<'EOF'
-pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-rootProject.name = "RobotMessengerFacebook"
-include(":app")
-EOF
-
-cat > build.gradle <<'EOF'
-plugins {
-    id 'com.android.application' version '8.6.1' apply false
-}
-EOF
-
-cat > gradle.properties <<'EOF'
-org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-android.useAndroidX=true
-EOF
-
-cat > app/build.gradle <<'EOF'
-plugins {
-    id 'com.android.application'
-}
-
-android {
-    namespace 'com.robotmessenger.facebook'
-    compileSdk 35
-
-    defaultConfig {
-        applicationId 'com.robotmessenger.facebook'
-        minSdk 23
-        targetSdk 35
-        versionCode 1
-        versionName '0.1'
-    }
-}
-EOF
-
-cat > app/src/main/AndroidManifest.xml <<'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <application
-        android:label="ROBOT MESSENGER FACEBOOK"
-        android:theme="@style/AppTheme"
-        android:allowBackup="false"
-        android:supportsRtl="true">
-
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-        </activity>
-
-    </application>
-
-</manifest>
-EOF
-
-cat > app/src/main/res/values/styles.xml <<'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
-        <item name="android:fontFamily">sans</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">#FFFFFF</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
-    </style>
-</resources>
-EOF
-
-cat > app/src/main/java/com/robotmessenger/facebook/MainActivity.java <<'EOF'
-package com.robotmessenger.facebook;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.widget.TextView;
-
-public class MainActivity extends Activity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        TextView textView = new TextView(this);
-        textView.setText("ROBOT MESSENGER FACEBOOK");
-        textView.setTextSize(22);
-        textView.setPadding(32, 32, 32, 32);
-
-        setContentView(textView);
-    }
-}
-EOF
-
-cat > .gitignore <<'EOF'
-.gradle/
-build/
-**/build/
-local.properties
-*.iml
-.idea/
-.DS_Store
-
-# Secrets
-*.env
-.env
-.env.*
-*.key
-*.pem
-*.p12
-*.jks
-keystore.properties
-
-# Facebook sensitive data
-cookies*
-session*
-EOF
+echo "===== STOP OLD GRADLE DAEMONS ====="
+gradle --stop 2>&1 || true
 
 echo
-echo "===== PROJECT STRUCTURE ====="
-find . -maxdepth 5 -type f \
-    ! -path "./.git/*" \
-    ! -path "./.robot/*" \
-    | sort
+echo "===== GRADLE CONFIG ====="
+cat gradle.properties
 
 echo
-echo "===== GRADLE VERSION ====="
-gradle --version | head -12
+echo "===== ROOT BUILD ====="
+cat build.gradle
 
 echo
-echo "===== BUILD DEBUG APK ====="
-gradle :app:assembleDebug --stacktrace
+echo "===== APP BUILD ====="
+cat app/build.gradle
 
 echo
-echo "===== APK RESULT ====="
-find app/build/outputs/apk -type f -maxdepth 3 -print -exec ls -lh {} \;
+echo "===== SETTINGS ====="
+cat settings.gradle
 
 echo
-echo "===== BATCH 2 SUCCESS ====="
-echo "ANDROID PROJECT FOUNDATION BUILD OK"
+echo "===== MANIFEST ====="
+cat app/src/main/AndroidManifest.xml
+
+echo
+echo "===== JAVA ====="
+java -version 2>&1 | head -3
+
+echo
+echo "===== SDK ====="
+echo "ANDROID_HOME=$ANDROID_HOME"
+test -d "$ANDROID_HOME/platforms/android-35" && echo "Platform 35: OK"
+test -d "$ANDROID_HOME/build-tools/35.0.0" && echo "Build Tools 35: OK"
+
+echo
+echo "===== BUILD WITHOUT DAEMON ====="
+gradle --no-daemon :app:assembleDebug --stacktrace
+
+EXIT_CODE=$?
+
+echo
+echo "===== BUILD EXIT CODE ====="
+echo "$EXIT_CODE"
+
+if [ "$EXIT_CODE" -eq 0 ]; then
+    echo
+    echo "===== APK ====="
+    find app/build/outputs/apk -type f -print -exec ls -lh {} \;
+    echo
+    echo "===== BATCH 2.1 SUCCESS ====="
+else
+    echo
+    echo "===== BATCH 2.1 FAILED ====="
+fi
+
+exit "$EXIT_CODE"
 

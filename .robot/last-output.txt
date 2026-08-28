@@ -1,33 +1,92 @@
-===== BATCH 2: ANDROID PROJECT FOUNDATION =====
+===== BATCH 2.1: GRADLE DIAGNOSTIC + FIX =====
 
-===== CLEAN FOUNDATION FILES =====
+===== STOP OLD GRADLE DAEMONS =====
+No Gradle daemons are running.
 
-===== PROJECT STRUCTURE =====
-./.gitignore
-./README.md
-./app/build.gradle
-./app/src/main/AndroidManifest.xml
-./build.gradle
-./gradle.properties
-./robot-run.sh
-./settings.gradle
+===== GRADLE CONFIG =====
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
 
-===== GRADLE VERSION =====
+===== ROOT BUILD =====
+plugins {
+    id 'com.android.application' version '8.6.1' apply false
+}
 
-------------------------------------------------------------
-Gradle 9.7.1
-------------------------------------------------------------
+===== APP BUILD =====
+plugins {
+    id 'com.android.application'
+}
 
-Build time:    2026-08-19 14:16:09 UTC
-Revision:      92f0512e7f06d84621afba191f75e265363890cf
+android {
+    namespace 'com.robotmessenger.facebook'
+    compileSdk 35
 
-Kotlin:        2.4.0
-Groovy:        4.0.32
-Ant:           Apache Ant(TM) version 1.10.17 compiled on April 6 2026
-Launcher JVM:  21.0.12 (Termux 21.0.12)
+    defaultConfig {
+        applicationId 'com.robotmessenger.facebook'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '0.1'
+    }
+}
 
-===== BUILD DEBUG APK =====
-Starting a Gradle Daemon (subsequent builds will be faster)
+===== SETTINGS =====
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "RobotMessengerFacebook"
+include(":app")
+
+===== MANIFEST =====
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:label="ROBOT MESSENGER FACEBOOK"
+        android:theme="@style/AppTheme"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
+</manifest>
+
+===== JAVA =====
+openjdk version "21.0.12" 2026-07-21
+OpenJDK Runtime Environment (build 21.0.12)
+OpenJDK 64-Bit Server VM (build 21.0.12, mixed mode)
+
+===== SDK =====
+ANDROID_HOME=/data/data/com.termux/files/home/lib/android-sdk-9123335
+Platform 35: OK
+Build Tools 35: OK
+
+===== BUILD WITHOUT DAEMON =====
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 
 FAILURE: Build failed with an exception.
 
@@ -43,8 +102,8 @@ Could not dispatch a message to the daemon.
 org.gradle.launcher.daemon.client.DaemonConnectionException: Could not dispatch a message to the daemon.
 	at org.gradle.launcher.daemon.client.DaemonClientConnection.dispatch(DaemonClientConnection.java:73)
 	at org.gradle.launcher.daemon.client.DaemonClient.executeBuild(DaemonClient.java:188)
-	at org.gradle.launcher.daemon.client.DaemonClient.execute(DaemonClient.java:172)
-	at org.gradle.launcher.daemon.client.DaemonClient.execute(DaemonClient.java:97)
+	at org.gradle.launcher.daemon.client.SingleUseDaemonClient.execute(SingleUseDaemonClient.java:63)
+	at org.gradle.launcher.daemon.client.SingleUseDaemonClient.execute(SingleUseDaemonClient.java:37)
 	at org.gradle.launcher.cli.RunBuildAction.run(RunBuildAction.java:56)
 	at org.gradle.internal.Actions$RunnableActionAdapter.execute(Actions.java:167)
 	at org.gradle.launcher.cli.DefaultCommandLineActionFactory$ParseAndBuildAction.execute(DefaultCommandLineActionFactory.java:276)
@@ -65,7 +124,7 @@ org.gradle.launcher.daemon.client.DaemonConnectionException: Could not dispatch 
 	at org.gradle.launcher.bootstrap.ProcessBootstrap.runNoExit(ProcessBootstrap.java:72)
 	at org.gradle.launcher.bootstrap.ProcessBootstrap.run(ProcessBootstrap.java:39)
 	at org.gradle.launcher.GradleMain.main(GradleMain.java:26)
-Caused by: org.gradle.internal.remote.internal.MessageIOException: Could not write '/127.0.0.1:44355'.
+Caused by: org.gradle.internal.remote.internal.MessageIOException: Could not write '/127.0.0.1:38885'.
 	at org.gradle.internal.remote.internal.inet.SocketConnection.flush(SocketConnection.java:142)
 	at org.gradle.launcher.daemon.client.DaemonClientConnection.dispatch(DaemonClientConnection.java:61)
 	... 23 more
@@ -82,3 +141,8 @@ Caused by: java.io.IOException: Connection reset by peer
 	at org.gradle.internal.remote.internal.inet.SocketConnection.flush(SocketConnection.java:140)
 	... 24 more
 
+
+===== BUILD EXIT CODE =====
+1
+
+===== BATCH 2.1 FAILED =====
