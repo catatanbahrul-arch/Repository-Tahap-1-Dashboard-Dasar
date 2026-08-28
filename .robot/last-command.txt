@@ -1,66 +1,90 @@
 
 set +e
 
-echo "===== BATCH 2.2: GRADLE/JAVA ENV DIAGNOSTIC ====="
+echo "===== BATCH 2.3 FINAL VERIFICATION ====="
+
+export ANDROID_HOME="$HOME/lib/android-sdk-9123335"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.0:$PATH"
 
 echo
-echo "===== MEMORY ====="
-free -h
-echo
-cat /proc/meminfo | head -20
+echo "===== MARKER ====="
+cat .robot/batch-2.3-marker.txt
 
 echo
-echo "===== PROCESS LIMIT ====="
-ulimit -a
+echo "===== JAVA TEST ====="
+mkdir -p .robot/java-test
 
-echo
-echo "===== JAVA PROCESSES ====="
-ps -ef | grep -E "[j]ava|[g]radle" || true
-
-echo
-echo "===== JAVA HOME ====="
-echo "JAVA_HOME=$JAVA_HOME"
-command -v java
-readlink -f "$(command -v java)" 2>/dev/null || true
-
-echo
-echo "===== JAVA VERSION ====="
-java -version 2>&1
-
-echo
-echo "===== JAVA SIMPLE TEST ====="
-cat > /tmp/TestJava.java <<'EOF'
+cat > .robot/java-test/TestJava.java <<'EOF'
 public class TestJava {
     public static void main(String[] args) {
         System.out.println("JAVA_PROCESS_OK");
-        System.out.println("Available processors: " + Runtime.getRuntime().availableProcessors());
-        System.out.println("Max memory: " + Runtime.getRuntime().maxMemory());
-        System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+        System.out.println("Processors=" + Runtime.getRuntime().availableProcessors());
+        System.out.println("MaxMemory=" + Runtime.getRuntime().maxMemory());
     }
 }
 EOF
 
-javac /tmp/TestJava.java 2>&1
-java -cp /tmp TestJava 2>&1
+javac .robot/java-test/TestJava.java
+JAVA_CODE=$?
+
+if [ "$JAVA_CODE" -eq 0 ]; then
+    java -cp .robot/java-test TestJava
+else
+    echo "JAVA_COMPILE_FAILED"
+fi
 
 echo
-echo "===== GRADLE VERSION ====="
-gradle --version 2>&1 | head -20
+echo "===== GRADLE WRAPPER ====="
+if [ -x "./gradlew" ]; then
+    echo "gradlew=FOUND"
+    ./gradlew --version | head -20
+else
+    echo "gradlew=NOT_FOUND"
+fi
 
 echo
-echo "===== GRADLE DAEMON CONFIG ====="
-find "$HOME/.gradle" -maxdepth 2 -type f \
-    \( -name "gradle.properties" -o -name "*.lock" \) \
-    -print 2>/dev/null | head -30
+echo "===== PROJECT ====="
+echo "--- settings.gradle ---"
+cat settings.gradle
 
 echo
-echo "===== PROJECT FILES ====="
-find . -maxdepth 3 -type f \
-    ! -path "./.git/*" \
-    ! -path "./.robot/*" \
-    | sort
+echo "--- root build.gradle ---"
+cat build.gradle
 
 echo
-echo "===== DIAGNOSTIC EXIT ====="
-echo "DIAGNOSTIC_COMPLETE"
+echo "--- app/build.gradle ---"
+cat app/build.gradle
+
+echo
+echo "===== BUILD ====="
+
+if [ -x "./gradlew" ]; then
+    ./gradlew --no-daemon --max-workers=1 :app:assembleDebug
+    BUILD_CODE=$?
+else
+    echo "NO_GRADLE_WRAPPER"
+    BUILD_CODE=90
+fi
+
+echo
+echo "===== BUILD RESULT ====="
+echo "BUILD_EXIT_CODE=$BUILD_CODE"
+
+if [ "$BUILD_CODE" -eq 0 ]; then
+    echo
+    echo "===== APK FILES ====="
+    find app/build/outputs/apk -type f -print -exec ls -lh {} \;
+    echo
+    echo "BATCH_2_3_RESULT=SUCCESS"
+else
+    echo
+    echo "BATCH_2_3_RESULT=FAILED"
+fi
+
+echo
+echo "===== TIMESTAMP ====="
+date -Iseconds
+
+exit "$BUILD_CODE"
 

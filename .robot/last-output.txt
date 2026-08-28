@@ -1,99 +1,67 @@
-===== BATCH 2.2: GRADLE/JAVA ENV DIAGNOSTIC =====
+===== BATCH 2.3 FINAL VERIFICATION =====
 
-===== MEMORY =====
-               total        used        free      shared  buff/cache   available
-Mem:           7.4Gi       5.0Gi       223Mi        43Mi       2.2Gi       1.9Gi
-Swap:          7.5Gi       3.2Gi       4.3Gi
+===== MARKER =====
+BATCH_2_3_STARTED
 
-MemTotal:        7720612 kB
-MemFree:          228592 kB
-MemAvailable:    2032884 kB
-Buffers:            1124 kB
-Cached:          2066960 kB
-SwapCached:        22164 kB
-Active:          2367880 kB
-Inactive:        1159304 kB
-Active(anon):    1466524 kB
-Inactive(anon):   397352 kB
-Active(file):     901356 kB
-Inactive(file):   761952 kB
-Unevictable:      375404 kB
-Mlocked:          375412 kB
-SwapTotal:       7864316 kB
-SwapFree:        4523368 kB
-Dirty:              1184 kB
-Writeback:             0 kB
-AnonPages:       1831028 kB
-Mapped:          1064860 kB
+===== JAVA TEST =====
+JAVA_PROCESS_OK
+Processors=8
+MaxMemory=1977614336
 
-===== PROCESS LIMIT =====
-real-time non-blocking time  (microseconds, -R) unlimited
-core file size              (blocks, -c) 0
-data seg size               (kbytes, -d) unlimited
-scheduling priority                 (-e) 40
-file size                   (blocks, -f) unlimited
-pending signals                     (-i) 27728
-max locked memory           (kbytes, -l) unlimited
-max memory size             (kbytes, -m) unlimited
-open files                          (-n) 32768
-pipe size                (512 bytes, -p) 8
-POSIX message queues         (bytes, -q) 819200
-real-time priority                  (-r) 0
-stack size                  (kbytes, -s) 8192
-cpu time                   (seconds, -t) unlimited
-max user processes                  (-u) 27728
-virtual memory              (kbytes, -v) unlimited
-file locks                          (-x) unlimited
+===== GRADLE WRAPPER =====
+gradlew=NOT_FOUND
 
-===== JAVA PROCESSES =====
-u0_a369  28709 28480  1  1970 pts/24   00:00:00 /data/data/com.termux/files/usr/bin/bash ./robot-run.sh  set +e  echo "===== BATCH 2.2: GRADLE/JAVA ENV DIAGNOSTIC ====="  echo echo "===== MEMORY =====" free -h echo cat /proc/meminfo | head -20  echo echo "===== PROCESS LIMIT =====" ulimit -a  echo echo "===== JAVA PROCESSES =====" ps -ef | grep -E "[j]ava|[g]radle" || true  echo echo "===== JAVA HOME =====" echo "JAVA_HOME=$JAVA_HOME" command -v java readlink -f "$(command -v java)" 2>/dev/null || true  echo echo "===== JAVA VERSION =====" java -version 2>&1  echo echo "===== JAVA SIMPLE TEST =====" cat > /tmp/TestJava.java <<'EOF' public class TestJava {     public static void main(String[] args) {         System.out.println("JAVA_PROCESS_OK");         System.out.println("Available processors: " + Runtime.getRuntime().availableProcessors());         System.out.println("Max memory: " + Runtime.getRuntime().maxMemory());         System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());     } } EOF  javac /tmp/TestJava.java 2>&1 java -cp /tmp TestJava 2>&1  echo echo "===== GRADLE VERSION =====" gradle --version 2>&1 | head -20  echo echo "===== GRADLE DAEMON CONFIG =====" find "$HOME/.gradle" -maxdepth 2 -type f \     \( -name "gradle.properties" -o -name "*.lock" \) \     -print 2>/dev/null | head -30  echo echo "===== PROJECT FILES =====" find . -maxdepth 3 -type f \     ! -path "./.git/*" \     ! -path "./.robot/*" \     | sort  echo echo "===== DIAGNOSTIC EXIT =====" echo "DIAGNOSTIC_COMPLETE" 
-u0_a369  28711 28709  1  1970 pts/24   00:00:00 bash -c  set +e  echo "===== BATCH 2.2: GRADLE/JAVA ENV DIAGNOSTIC ====="  echo echo "===== MEMORY =====" free -h echo cat /proc/meminfo | head -20  echo echo "===== PROCESS LIMIT =====" ulimit -a  echo echo "===== JAVA PROCESSES =====" ps -ef | grep -E "[j]ava|[g]radle" || true  echo echo "===== JAVA HOME =====" echo "JAVA_HOME=$JAVA_HOME" command -v java readlink -f "$(command -v java)" 2>/dev/null || true  echo echo "===== JAVA VERSION =====" java -version 2>&1  echo echo "===== JAVA SIMPLE TEST =====" cat > /tmp/TestJava.java <<'EOF' public class TestJava {     public static void main(String[] args) {         System.out.println("JAVA_PROCESS_OK");         System.out.println("Available processors: " + Runtime.getRuntime().availableProcessors());         System.out.println("Max memory: " + Runtime.getRuntime().maxMemory());         System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());     } } EOF  javac /tmp/TestJava.java 2>&1 java -cp /tmp TestJava 2>&1  echo echo "===== GRADLE VERSION =====" gradle --version 2>&1 | head -20  echo echo "===== GRADLE DAEMON CONFIG =====" find "$HOME/.gradle" -maxdepth 2 -type f \     \( -name "gradle.properties" -o -name "*.lock" \) \     -print 2>/dev/null | head -30  echo echo "===== PROJECT FILES =====" find . -maxdepth 3 -type f \     ! -path "./.git/*" \     ! -path "./.robot/*" \     | sort  echo echo "===== DIAGNOSTIC EXIT =====" echo "DIAGNOSTIC_COMPLETE" 
+===== PROJECT =====
+--- settings.gradle ---
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
-===== JAVA HOME =====
-JAVA_HOME=/data/data/com.termux/files/usr/lib/jvm/java-21-openjdk/
-/data/data/com.termux/files/usr/bin/java
-/data/data/com.termux/files/usr/lib/jvm/java-21-openjdk/bin/java
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 
-===== JAVA VERSION =====
-openjdk version "21.0.12" 2026-07-21
-OpenJDK Runtime Environment (build 21.0.12)
-OpenJDK 64-Bit Server VM (build 21.0.12, mixed mode)
+rootProject.name = "RobotMessengerFacebook"
+include(":app")
 
-===== JAVA SIMPLE TEST =====
-bash: line 32: /tmp/TestJava.java: Permission denied
-error: file not found: /tmp/TestJava.java
-Usage: javac <options> <source files>
-use --help for a list of possible options
-Error: Could not find or load main class TestJava
-Caused by: java.lang.ClassNotFoundException: TestJava
+--- root build.gradle ---
+plugins {
+    id 'com.android.application' version '8.6.1' apply false
+}
 
-===== GRADLE VERSION =====
+--- app/build.gradle ---
+plugins {
+    id 'com.android.application'
+}
 
-------------------------------------------------------------
-Gradle 9.7.1
-------------------------------------------------------------
+android {
+    namespace 'com.robotmessenger.facebook'
+    compileSdk 35
 
-Build time:    2026-08-19 14:16:09 UTC
-Revision:      92f0512e7f06d84621afba191f75e265363890cf
+    defaultConfig {
+        applicationId 'com.robotmessenger.facebook'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '0.1'
+    }
+}
 
-Kotlin:        2.4.0
-Groovy:        4.0.32
-Ant:           Apache Ant(TM) version 1.10.17 compiled on April 6 2026
-Launcher JVM:  21.0.12 (Termux 21.0.12)
-Daemon JVM:    /data/data/com.termux/files/usr/lib/jvm/java-21-openjdk (no Daemon JVM specified, using current Java home)
-OS:            Linux 6.6.118-android15-8-o-ga031df45165f-4k aarch64
+===== BUILD =====
+NO_GRADLE_WRAPPER
 
+===== BUILD RESULT =====
+BUILD_EXIT_CODE=90
 
-===== GRADLE DAEMON CONFIG =====
+BATCH_2_3_RESULT=FAILED
 
-===== PROJECT FILES =====
-./.gitignore
-./README.md
-./app/build.gradle
-./build.gradle
-./gradle.properties
-./robot-run.sh
-./settings.gradle
-
-===== DIAGNOSTIC EXIT =====
-DIAGNOSTIC_COMPLETE
+===== TIMESTAMP =====
+2026-08-28T14:01:57+07:00
