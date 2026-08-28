@@ -1,0 +1,39 @@
+===== TAHAP 1 — CURRENT STATUS =====
+Fri Aug 28 16:18:08 WIB 2026
+
+===== GIT =====
+origin	https://github.com/catatanbahrul-arch/Repository-Tahap-1-Dashboard-Dasar.git (fetch)
+origin	https://github.com/catatanbahrul-arch/Repository-Tahap-1-Dashboard-Dasar.git (push)
+main
+?? .robot/current-status.txt
+bf3f1a6 chore: record tahap 1 build diagnostic
+a0c2f0c stage1: master dashboard and android build pipeline
+95a8c80 robot: record failed command
+2f72520 robot: record failed command
+be593f2 robot: record failed command
+
+===== FILE PROJECT =====
+./.github/workflows/android-build.yml
+./.gitignore
+./README.md
+./app/build.gradle
+./app/src/main/AndroidManifest.xml
+./build.gradle
+./gradle.properties
+./robot-run.sh
+./settings.gradle
+
+===== BUILD FILES =====
+./app/build.gradle
+./settings.gradle
+./build.gradle
+./gradle.properties
+
+===== SDK =====
+ANDROID_HOME=/data/data/com.termux/files/home/lib/android-sdk-9123335
+ANDROID_SDK_ROOT=/data/data/com.termux/files/home/lib/android-sdk-9123335
+/data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/aapt2
+/data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/d8
+/data/data/com.termux/files/home/lib/android-sdk-9123335/build-tools/35.0.0/apksigner
+
+===== APK =====
